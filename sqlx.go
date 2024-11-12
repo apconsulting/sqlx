@@ -1,6 +1,7 @@
 package sqlx
 
 import (
+	"context"
 	"database/sql"
 	"database/sql/driver"
 	"errors"
@@ -339,7 +340,13 @@ func (db *DB) MustBegin() *Tx {
 
 // Beginx begins a transaction and returns an *sqlx.Tx instead of an *sql.Tx.
 func (db *DB) Beginx() (*Tx, error) {
-	tx, err := db.DB.Begin()
+	return db.BeginTx(context.Background(), nil)
+}
+
+// BeginTx begins a transaction with context and options.
+// Returns an *sqlx.Tx instead of an *sql.Tx.
+func (db *DB) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) {
+	tx, err := db.DB.BeginTx(ctx, opts)
 	if err != nil {
 		return nil, err
 	}
